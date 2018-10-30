@@ -1,59 +1,34 @@
 //What is a JS Object?
-//var name = 'Michaelangelo';
-
-function sayHello(name){
-  return `Hello, ${name}, how are you today?`;
-}
-
-var turtleMichaelangelo = {
-  //property: value,
-  name: 'Michaelangelo',
-  shell: true,
-  age: 15,
-  color: 'orange',
-  type: 'box',
-  size: 62.3,
-  ninja: true,
-  mutant: true,
-  sayHello: function() {
-    return `Hello, my name is ${this.name}`;
+var store1standPike = {
+  location : '1st and Pike',
+  minCust: 23,
+  maxCust: 65,
+  avgCookieSale: 6.3,
+  openHours: [6,7,8,9,10,11,12,1,2,3,4,5,6,7,8],
+  avgCustomersPerHourArray: [],
+  avgCustomersPerHourGenerator: function() {
+    return Math.floor((Math.random() * (this.maxCust - this.minCust+1)) + this.minCust);
   },
+  totalCookies: function() {
+    var sum = 0;
+    for(var hours = 0; hours < 15; hours++);
+    var totalCookies = Math.floor(this.avgCookieSale * this.avgCustomersPerHourArray());
+    console.log('Cookies', totalCookies);
+    sum = sum + totalCookies;
+  },
+  
+
+/*
+  counter for length of empty arrary: for(var i = 0; i < avgCustomersPerHourArray.length; i++) { then assign a number to each fuck
 };
 
-var turtleDonatello = {
-  //property: value,
-  name: 'Donatello',
-  shell: true,
-  age: 15,
-  color: 'purple',
-  type: 'box',
-  size: 62.3,
-  ninja: true,
-  mutant: true,
-  sayHello: function() {
-    return `Hello, my name is ${this.name}`;
+dailyCookiesSold: function () {
+    return this.avgCustomersPerHourArray * this.avgCookieSale;
   },
-  render() {
-    //create an element
-    //provide content for that element
-    //append the elemnt to the page (in a specific place)
-    var container = document.createElement('section');
-    var nameEl = document.createElement('h3');
-    var messageEl = document.createElement('p');
 
-    nameEl.textContent = this.name;
-    messageEl.textContent = `I am a ninja and I am ${this.color}`;
-
-
-    container.appendChild(nameEl);
-    container.appendChild(messageEl);  
-    console.log('container', container);
-
-    var mainEl = document.getElementById('main-content');
-    mainEl.appendChild(container);  
-  }
+customersPerHour: function getRandomIntInclusive(minCust, maxCust) {
+  minCust = Math.ceil(minCust);
+  maxCust = Math.floor(maxCust);
+  return Math.floor(Math.random() * (maxCust - minCust+1)) + minCust;
+*/
 };
-
-var nums = [1, 2, 3, 4]; // arrays should generally have like data types
-
-turtleMichaelangelo.render;
