@@ -221,7 +221,7 @@ capitolHill.render();
 //start new shop
 
 var alki = {
-  name: 'alki',
+  name: 'Alki',
   minCustPerHour: 2,
   maxCustPerHour: 16,
   avgCookiesPerCust: 4.6,
