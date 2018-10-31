@@ -1,10 +1,14 @@
 'use strict';
 
+class store {
+
+  
+}
+
+
 var pikeAndFirst = {
   name: 'First and Pike',
-  minCustPerHour: 23,
-  maxCustPerHour: 65,
-  avgCookiesPerCust: 6.3,
+  
   custPerHour: [],
   cookiesPerHour: [],
   hoursOfOps: ['6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p'],
@@ -52,7 +56,7 @@ var pikeAndFirst = {
 };
 
 pikeAndFirst.render();
-
+/*
 //start new shop
 
 var seaTacAirport = {
