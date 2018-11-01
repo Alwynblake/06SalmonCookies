@@ -1,278 +1,170 @@
 'use strict';
+var allStores = [];
+var hoursOfOps = ['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm', ];//paste the long 6-8pm string here from the lower vars
 
-class store {
+function Store(name, minCustPerHour, maxCustPerHour, avgCookiesPerCust) {
+  this.name = name;
+  this.minCustPerHour = minCustPerHour;
+  this.maxCustPerHour = maxCustPerHour;
+  this.avgCookiesPerCust = avgCookiesPerCust;
+  this.custPerHour = [];
+  this.cookiesPerHour = [];
+  this.dailyTotal = 0;
 
-  
+  allStores.push(this);
+
+  this.getCustPerHour();
+  this.getCookPerHour();
+  this.render();
+}
+Store.prototype.getCustPerHour = function() {
+  for(var i = 0; i < hoursOfOps.length; i++) {
+    var perHour = Math.floor(Math.random() * (this.maxCustPerHour - this.minCustPerHour) + this.minCustPerHour);
+    this.custPerHour.push(perHour);
+  }
+  console.log('custPerHour', this.custPerHour);
+};
+
+Store.prototype.getCookPerHour = function() {
+  for(var i = 0; i < hoursOfOps.length; i++) {
+    var perHour = Math.round(this.custPerHour[i] * this.avgCookiesPerCust);
+    this.cookiesPerHour.push(perHour);
+    this.dailyTotal += perHour;
+  }
+  console.log('cookiesPerHour', this.cookiesPerHour);
+};
+
+Store.prototype.render = function() {
+  this.getCustPerHour();
+
+  var tableBody = document.getElementById('tbl-body'); // TODO: change to table body after creating that function
+  var trEl = document.createElement('tr');
+
+  var thEl = document.createElement('th');
+  thEl.textContent = this.name;
+  trEl.appendChild(thEl);
+
+  for (var i = 0; i < hoursOfOps.length; i++) {
+    var tdEl = document.createElement('td');
+    tdEl.textContent = this.cookiesPerHour[i];
+    trEl.appendChild(tdEl);
+  }
+
+  var totalEl = document.createElement('td');
+  totalEl.textContent = this.dailyTotal;
+  trEl.appendChild(totalEl);
+
+  tableBody.appendChild(trEl);
+  //string with "Totals" should appear AFTER allSTORES has filled the row
+};
+
+function createTable() {
+  var mainEl = document.getElementById('main-content');
+  var tblEl = document.createElement('table');
+  tblEl.id = 'sales-table';
+  mainEl.appendChild(tblEl);
+}
+
+function createTableHeader() {
+  var tblEl = document.getElementById('sales-table');
+  var theadEl = document.createElement('thead');
+  var trEl = document.createElement('tr');
+  var emptyTh = document.createElement('th');
+
+  trEl.appendChild(emptyTh);
+
+  for(var i = 0; i < hoursOfOps.length; i++) {
+    var thEl = document.createElement('th');
+    thEl.textContent = hoursOfOps[i];
+    trEl.appendChild(thEl);
+  }
+
+  var totalEl = document.createElement('th');
+  totalEl.textContent = 'Total';
+  trEl.appendChild(totalEl);
+
+  theadEl.appendChild(trEl);
+  tblEl.appendChild(theadEl);
+}
+
+function createTableBody() {
+  var tblEl = document.getElementById('sales-table');
+  var tbodyEl = document.createElement('tbody');
+  tbodyEl.id = 'tbl-body';
+  tblEl.appendChild(tbodyEl);
+}
+
+function createTableFooter() {
+  var tfootElCheck = document.getElementById('tbl-foot');
+
+  if(tfootElCheck) {
+    tfootElCheck.remove();
+  }
+
+  var tblEl = document.getElementById('sales-table');
+  var tfootEl = document.createElement('tfoot');
+  var trEl = document.createElement('tr');
+
+  tfootEl.id = 'tbl-foot';
+
+  var emptyThEl = document.createElement('th');
+  emptyThEl.textContent = 'Totals';
+  trEl.appendChild(emptyThEl);
+
+  var grandTotal = 0;
+  for(var i = 0; i < hoursOfOps.length; i++) {
+    var tdEl = document.createElement('td');
+    var totals = 0;
+
+    for(var j = 0; j < Store.length; j++) {
+      console.log('Store', Store);
+      totals += allStores[j].cookiesPerHour[i];
+    }
+
+    tdEl.textContent = totals;
+    trEl.appendChild(tdEl);
+
+    grandTotal += totals;
+  }
+
+  var grandTotalEl = document.createElement('td');
+  grandTotalEl.textContent = grandTotal;
+  trEl.appendChild(grandTotalEl);
+
+  tfootEl.appendChild(trEl);
+  tblEl.appendChild(tfootEl);
 }
 
 
-var pikeAndFirst = {
-  name: 'First and Pike',
-  
-  custPerHour: [],
-  cookiesPerHour: [],
-  hoursOfOps: ['6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p'],
-  dailyTotal: 0,
-  generateRandomCustPerHour: function() {
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var randomCust = Math.floor(Math.random() * (this.maxCustPerHour - this.minCustPerHour + 1) + this.minCustPerHour);
-      this.custPerHour.push(randomCust);
-    }
-    console.log('custPerHour', this.custPerHour);
-  },
-  generateHourlySales: function() {
-    // line below will populate custPerHour array
-    this.generateRandomCustPerHour();
+(function run() {
+  createTable();
+  createTableHeader();
+  createTableBody();
+})();
 
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var perHour = Math.round(this.custPerHour[i] * this.avgCookiesPerCust);
-      this.cookiesPerHour.push(perHour);
-      //this.dailyTotal = this.dailyTotal + perHour;
-      this.dailyTotal += perHour;
-    }
-    console.log('cookiesPerHour', this.cookiesPerHour);
-  },
-  render: function() {
-    this.generateHourlySales();
-    // create
-    var container = document.getElementById('main-content');
-    var title = document.createElement('h3');
-    container.appendChild(title);
-    var total = document.createElement('li');
+new Store('First and Pike', 23, 65, 6.4);
+new Store('SeaTac', 12, 34, 3.4);
+new Store('Seattle Center', 3, 5, 4.1);
+new Store('Capitol Hill', 20, 38, 2.3);
+new Store('Alki', 2, 16, 4.6);
+createTableFooter();
 
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var hourly = document.createElement('li');
-      hourly.textContent = `${this.hoursOfOps[i]}: ${this.cookiesPerHour[i]} cookies`;
-      // ${this.dailyTotal} is in this function, i need to apply this on line 50?
-      container.appendChild(hourly);
-    }
-    // provide content
-    title.textContent = this.name;
-    total.textContent = `Total: ${this.dailyTotal} cookies`;
+// var salesFormEl = document.getElementById('sales-form');
+// salesFormEl.addEventListener('submit', function() {})
 
-    // append
-    container.appendChild(total);
-  }
-};
+// document.getElementById('salesform').addEventListener('submit', function(event) {
+//   event.preventDefault();
 
-pikeAndFirst.render();
-/*
-//start new shop
+//   var name = event.target.storename.value;
+//   var min = event.target.min.value;
+//   var max = event.target.max.value;
+//   var avg = event.target.avg.value;
 
-var seaTacAirport = {
-  name: 'SeaTac Airport',
-  minCustPerHour: 3,
-  maxCustPerHour: 24,
-  avgCookiesPerCust: 1.2,
-  custPerHour: [],
-  cookiesPerHour: [],
-  hoursOfOps: ['6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p'],
-  dailyTotal: 0,
-  generateRandomCustPerHour: function() {
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var randomCust = Math.floor(Math.random() * (this.maxCustPerHour - this.minCustPerHour + 1) + this.minCustPerHour);
-      this.custPerHour.push(randomCust);
-    }
-    console.log('custPerHour', this.custPerHour);
-  },
-  generateHourlySales: function() {
-    // line below will populate custPerHour array
-    this.generateRandomCustPerHour();
+//   new Store(name, min, max, avg);
 
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var perHour = Math.round(this.custPerHour[i] * this.avgCookiesPerCust);
-      this.cookiesPerHour.push(perHour);
-      //this.dailyTotal = this.dailyTotal + perHour;
-      this.dailyTotal += perHour;
-    }
-    console.log('cookiesPerHour', this.cookiesPerHour);
-  },
-  render: function() {
-    this.generateHourlySales();
-    // create
-    var container = document.getElementById('main-content');
-    var title = document.createElement('h3');
-    container.appendChild(title);
-    var total = document.createElement('li');
+//   event.target.storename.value = '';
+//   event.target.min.value = '';
+//   event.target.max.value = '';
+//   event.target.avg.value = '';
+// });
 
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var hourly = document.createElement('li');
-      hourly.textContent = `${this.hoursOfOps[i]}: ${this.cookiesPerHour[i]} cookies`;
-      // ${this.dailyTotal} is in this function, i need to apply this on line 50?
-      container.appendChild(hourly);
-    }
-    // provide content
-    title.textContent = this.name;
-    total.textContent = `Total: ${this.dailyTotal} cookies`;
-
-    // append
-    container.appendChild(total);
-  }
-};
-
-seaTacAirport.render();
-
-//start new shop
-
-var seattleCenter = {
-  name: 'Seattle Center',
-  minCustPerHour: 11,
-  maxCustPerHour: 38,
-  avgCookiesPerCust: 3.7,
-  custPerHour: [],
-  cookiesPerHour: [],
-  hoursOfOps: ['6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p'],
-  dailyTotal: 0,
-  generateRandomCustPerHour: function() {
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var randomCust = Math.floor(Math.random() * (this.maxCustPerHour - this.minCustPerHour + 1) + this.minCustPerHour);
-      this.custPerHour.push(randomCust);
-    }
-    console.log('custPerHour', this.custPerHour);
-  },
-  generateHourlySales: function() {
-    // line below will populate custPerHour array
-    this.generateRandomCustPerHour();
-
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var perHour = Math.round(this.custPerHour[i] * this.avgCookiesPerCust);
-      this.cookiesPerHour.push(perHour);
-      //this.dailyTotal = this.dailyTotal + perHour;
-      this.dailyTotal += perHour;
-    }
-    console.log('cookiesPerHour', this.cookiesPerHour);
-  },
-  render: function() {
-    this.generateHourlySales();
-    // create
-    var container = document.getElementById('main-content');
-    var title = document.createElement('h3');
-    container.appendChild(title);
-    var total = document.createElement('li');
-
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var hourly = document.createElement('li');
-      hourly.textContent = `${this.hoursOfOps[i]}: ${this.cookiesPerHour[i]} cookies`;
-      // ${this.dailyTotal} is in this function, i need to apply this on line 50?
-      container.appendChild(hourly);
-    }
-    // provide content
-    title.textContent = this.name;
-    total.textContent = `Total: ${this.dailyTotal} cookies`;
-
-    // append
-    container.appendChild(total);
-  }
-};
-
-seattleCenter.render();
-
-//start new shop
-
-var capitolHill = {
-  name: 'Capitol Hill',
-  minCustPerHour: 20,
-  maxCustPerHour: 38,
-  avgCookiesPerCust: 2.3,
-  custPerHour: [],
-  cookiesPerHour: [],
-  hoursOfOps: ['6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p'],
-  dailyTotal: 0,
-  generateRandomCustPerHour: function() {
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var randomCust = Math.floor(Math.random() * (this.maxCustPerHour - this.minCustPerHour + 1) + this.minCustPerHour);
-      this.custPerHour.push(randomCust);
-    }
-    console.log('custPerHour', this.custPerHour);
-  },
-  generateHourlySales: function() {
-    // line below will populate custPerHour array
-    this.generateRandomCustPerHour();
-
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var perHour = Math.round(this.custPerHour[i] * this.avgCookiesPerCust);
-      this.cookiesPerHour.push(perHour);
-      //this.dailyTotal = this.dailyTotal + perHour;
-      this.dailyTotal += perHour;
-    }
-    console.log('cookiesPerHour', this.cookiesPerHour);
-  },
-  render: function() {
-    this.generateHourlySales();
-    // create
-    var container = document.getElementById('main-content');
-    var title = document.createElement('h3');
-    container.appendChild(title);
-    var total = document.createElement('li');
-
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var hourly = document.createElement('li');
-      hourly.textContent = `${this.hoursOfOps[i]}: ${this.cookiesPerHour[i]} cookies`;
-      // ${this.dailyTotal} is in this function, i need to apply this on line 50?
-      container.appendChild(hourly);
-    }
-    // provide content
-    title.textContent = this.name;
-    total.textContent = `Total: ${this.dailyTotal} cookies`;
-
-    // append
-    container.appendChild(total);
-  }
-};
-
-capitolHill.render();
-
-//start new shop
-
-var alki = {
-  name: 'Alki',
-  minCustPerHour: 2,
-  maxCustPerHour: 16,
-  avgCookiesPerCust: 4.6,
-  custPerHour: [],
-  cookiesPerHour: [],
-  hoursOfOps: ['6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p'],
-  dailyTotal: 0,
-  generateRandomCustPerHour: function() {
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var randomCust = Math.floor(Math.random() * (this.maxCustPerHour - this.minCustPerHour + 1) + this.minCustPerHour);
-      this.custPerHour.push(randomCust);
-    }
-    console.log('custPerHour', this.custPerHour);
-  },
-  generateHourlySales: function() {
-    // line below will populate custPerHour array
-    this.generateRandomCustPerHour();
-
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var perHour = Math.round(this.custPerHour[i] * this.avgCookiesPerCust);
-      this.cookiesPerHour.push(perHour);
-      //this.dailyTotal = this.dailyTotal + perHour;
-      this.dailyTotal += perHour;
-    }
-    console.log('cookiesPerHour', this.cookiesPerHour);
-  },
-  render: function() {
-    this.generateHourlySales();
-    // create
-    var container = document.getElementById('main-content');
-    var title = document.createElement('h3');
-    container.appendChild(title);
-    var total = document.createElement('li');
-
-    for(var i = 0; i < this.hoursOfOps.length; i++) {
-      var hourly = document.createElement('li');
-      hourly.textContent = `${this.hoursOfOps[i]}: ${this.cookiesPerHour[i]} cookies`;
-      // ${this.dailyTotal} is in this function, i need to apply this on line 50?
-      container.appendChild(hourly);
-    }
-    // provide content
-    title.textContent = this.name;
-    total.textContent = `Total: ${this.dailyTotal} cookies`;
-
-    // append
-    container.appendChild(total);
-  }
-};
-
-alki.render();
